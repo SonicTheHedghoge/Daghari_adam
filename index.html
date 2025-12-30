@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Daghari Adem — Digital Luxury Architect</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#020202;
+  --fg:#f5f5f5;
+  --muted:#9a9a9a;
+  --gold:#d6b46c;
+  --accent-gold: rgba(214,180,108,.15);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:Inter,system-ui;
+  background:
+    radial-gradient(1200px 600px at 70% -10%,var(--accent-gold),transparent 70%),
+    radial-gradient(800px 400px at 20% 90%,var(--accent-gold),transparent 70%),
+    radial-gradient(600px 300px at 50% 50%,rgba(255,255,255,.05),transparent),
+    var(--bg);
+  color:var(--fg);
+  overflow-x:hidden;
+}
+
+section{padding:180px 6vw}
+h1,h2,h3{font-weight:900}
+p{color:#cfcfcf; line-height:1.6;}
+
+.lang-toggle{
+  position:fixed;
+  top:30px;
+  right:6vw;
+  z-index:999;
+  display:flex;
+  gap:10px;
+}
+
+.lang-toggle button{
+  background:none;
+  border:1px solid #333;
+  color:#aaa;
+  padding:8px 16px;
+  border-radius:999px;
+  cursor:pointer;
+  transition:border-color .4s, color .4s;
+}
+
+.lang-toggle button.active{
+  border-color:var(--gold);
+  color:var(--gold);
+}
+
+.hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  position:relative;
+}
+
+.hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to bottom, transparent 40%, var(--bg) 100%);
+  pointer-events:none;
+}
+
+.hero small{
+  letter-spacing:5px;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.hero h1{
+  font-size:clamp(80px,12vw,180px);
+  line-height:.92;
+  margin:40px 0;
+  letter-spacing:-2px;
+}
+
+.hero h1 span{color:var(--gold)}
+
+.hero p{
+  max-width:600px;
+  font-size:20px;
+  opacity:.9;
+}
+
+.divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:.4;
+  margin:0 6vw;
+}
+
+.projects h2,
+.contact h2{
+  font-size:56px;
+  margin-bottom:100px;
+  text-align:center;
+}
+
+.project{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:100px;
+  margin-bottom:200px;
+  cursor:pointer;
+  transition:transform .6s ease;
+}
+
+.project:hover{
+  transform:translateY(-10px);
+}
+
+.project:nth-child(even){direction:rtl}
+.project:nth-child(even) *{direction:ltr}
+
+.project h3{font-size:42px;margin-bottom:24px; line-height:1.1;}
+
+.project p{font-size:18px; max-width:500px;}
+
+.label{
+  margin-top:32px;
+  display:inline-block;
+  color:var(--gold);
+  letter-spacing:3px;
+  font-size:14px;
+  text-transform:uppercase;
+}
+
+/* PREVIEWS */
+.preview{
+  border-radius:32px;
+  overflow:hidden;
+  box-shadow:0 80px 200px rgba(0,0,0,.95);
+  transition:transform .6s, box-shadow .6s;
+  aspect-ratio:16/10;
+  position:relative;
+}
+
+.preview img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:transform .8s ease;
+}
+
+.project:hover .preview img{
+  transform:scale(1.05);
+}
+
+.preview::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to top, rgba(0,0,0,.6), transparent 40%);
+  pointer-events:none;
+}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.92);
+  display:none;
+  align-items:flex-start;
+  justify-content:center;
+  z-index:1000;
+  padding:100px 6vw 6vw;
+  overflow-y:auto;
+}
+
+.modal.active{display:flex}
+
+.modal-content{
+  width:100%;
+  max-width:1400px;
+  display:flex;
+  flex-direction:column;
+  gap:60px;
+  position:relative;
+}
+
+.modal-shot{
+  border-radius:32px;
+  overflow:hidden;
+  box-shadow:0 60px 160px rgba(0,0,0,.9);
+  width:100%;
+}
+
+.modal-shot img{
+  width:100%;
+  height:auto;
+  display:block;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* CLOSE BUTTON */
+.close-btn{
+  position:fixed;
+  top:30px;
+  right:6vw;
+  z-index:1001;
+  background:var(--gold);
+  color:#111;
+  padding:12px 28px;
+  border:none;
+  border-radius:999px;
+  font-weight:700;
+  font-size:16px;
+  cursor:pointer;
+  opacity:0;
+  transform:translateY(-20px);
+  transition:opacity .4s, transform .4s;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
+}
+
+.modal.active .close-btn{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.close-btn:hover{
+  transform:translateY(0) scale(1.05);
+}
+
+/* CONTACT */
+.contact form{
+  max-width:500px;
+  margin:0 auto;
+  display:grid;
+  gap:24px;
+}
+
+input,textarea{
+  background:transparent;
+  border:none;
+  border-bottom:1px solid #444;
+  padding:16px 0;
+  color:white;
+  font-size:18px;
+  transition:border-color .4s;
+}
+
+input:focus, textarea:focus{
+  outline:none;
+  border-color:var(--gold);
+}
+
+button{
+  margin-top:30px;
+  padding:18px;
+  background:var(--gold);
+  color:#111;
+  border:none;
+  border-radius:999px;
+  font-weight:700;
+  cursor:pointer;
+  transition:transform .3s;
+}
+
+button:hover{transform:scale(1.05);}
+
+footer{
+  padding:100px 6vw;
+  color:#555;
+  font-size:15px;
+  text-align:center;
+}
+
+@media(max-width:1000px){
+  .project{grid-template-columns:1fr; gap:60px;}
+  .modal-content{gap:40px;}
+  section{padding:120px 6vw}
+  .modal{padding:120px 6vw 6vw;}
+  .close-btn{top:80px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="lang-toggle">
+  <button onclick="setLang('en')" id="btn-en" class="active">EN</button>
+  <button onclick="setLang('fr')" id="btn-fr">FR</button>
+</div>
+
+<section class="hero">
+  <small data-i18n="badge">Digital Portfolio</small>
+  <h1>Daghari<br><span>Adem</span></h1>
+  <p data-i18n="heroText">
+    Web developer crafting calm, expensive digital experiences from Djerba, Tunisia.
+  </p>
+</section>
+
+<div class="divider"></div>
+
+<section class="projects">
+  <h2 data-i18n="work">Selected Work</h2>
+
+  <!-- Project 1: Luxury Fragrance Campaign -->
+  <div class="project" onclick="openModal('p1')">
+    <div>
+      <h3 data-i18n="p1t">Luxury Fragrance Campaign</h3>
+      <p data-i18n="p1d">Cinematic website for a premium perfume launch.</p>
+      <span class="label">Concept Experience</span>
+    </div>
+    <div class="preview">
+      <img src="https://cdn.dribbble.com/users/6234/screenshots/11141444/media/1a3f1ecc33b485566cd0a21a46e0ff68.png" alt="Luxury Fragrance Preview" loading="lazy">
+    </div>
+  </div>
+
+  <!-- Project 2: AI Music Platform -->
+  <div class="project" onclick="openModal('p2')">
+    <div>
+      <h3 data-i18n="p2t">AI Music Platform</h3>
+      <p data-i18n="p2d">Emotion-driven interface turning text into sound.</p>
+      <span class="label">UI / UX Exploration</span>
+    </div>
+    <div class="preview">
+      <img src="https://miro.medium.com/v2/resize:fit:1400/1*70jvFtgIcbDncjt0Lh98eQ.png" alt="AI Music Platform Preview" loading="lazy">
+    </div>
+  </div>
+
+</section>
+
+<div class="divider"></div>
+
+<section class="contact">
+  <h2 data-i18n="contact">Contact</h2>
+  <form action="https://api.web3forms.com/submit" method="POST">
+    <input type="hidden" name="access_key" value="2d33b836-9e9d-46cc-8026-738cb7bb70e0">
+    <input type="text" name="name" placeholder="Name" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <textarea name="message" rows="5" placeholder="Message" required></textarea>
+    <button type="submit" data-i18n="send">Send</button>
+  </form>
+</section>
+
+<footer>© 2025 — Daghari Adem</footer>
+
+<!-- SHARED CLOSE BUTTON -->
+<button class="close-btn" onclick="closeModal()">Return Home</button>
+
+<!-- Modal 1: Luxury Fragrance -->
+<div class="modal" id="p1" onclick="closeModal(event)">
+  <div class="modal-content">
+    <div class="modal-shot"><img src="https://cdn.dribbble.com/users/6234/screenshots/11141444/media/1a3f1ecc33b485566cd0a21a46e0ff68.png" alt="Fragrance Shot 1" loading="lazy"></div>
+    <div class="modal-shot"><img src="https://cdn.dribbble.com/userupload/45838083/file/original-151a1ea77e59f20e2befa3cccf190e4c.png" alt="Fragrance Shot 2" loading="lazy"></div>
+    <div class="modal-shot"><img src="https://cdn.dribbble.com/userupload/16524960/file/original-af636aea22cc28ff1af8cd3b2150b50c.png" alt="Fragrance Shot 3" loading="lazy"></div>
+    <div class="modal-shot"><img src="https://i.etsystatic.com/41855169/r/il/945605/6071442451/il_fullxfull.6071442451_cjg7.jpg" alt="Fragrance Shot 4" loading="lazy"></div>
+  </div>
+</div>
+
+<!-- Modal 2: AI Music Platform -->
+<div class="modal" id="p2" onclick="closeModal(event)">
+  <div class="modal-content">
+    <div class="modal-shot"><img src="https://miro.medium.com/v2/resize:fit:1400/1*70jvFtgIcbDncjt0Lh98eQ.png" alt="AI Music Shot 1" loading="lazy"></div>
+    <div class="modal-shot"><img src="https://miro.medium.com/v2/resize:fit:1200/1*Lz2QGFkqvYSKEn3yIGxB-A.png" alt="AI Music Shot 2" loading="lazy"></div>
+    <div class="modal-shot"><img src="https://img.freepik.com/free-vector/gradient-dark-mode-app-template_23-2150497989.jpg" alt="AI Music Shot 3" loading="lazy"></div>
+    <div class="modal-shot"><img src="https://www.shutterstock.com/image-vector/music-player-interface-playlist-view-600nw-2681468869.jpg" alt="AI Music Shot 4" loading="lazy"></div>
+  </div>
+</div>
+
+<script>
+const dict={
+  en:{
+    badge:"Digital Portfolio",
+    heroText:"Web developer crafting calm, expensive digital experiences from Djerba, Tunisia.",
+    work:"Selected Work",
+    p1t:"Luxury Fragrance Campaign",
+    p1d:"Cinematic website for a premium perfume launch.",
+    p2t:"AI Music Platform",
+    p2d:"Emotion-driven interface turning text into sound.",
+    contact:"Contact",
+    send:"Send"
+  },
+  fr:{
+    badge:"Portfolio Digital",
+    heroText:"Développeur web créant des expériences digitales calmes et luxueuses depuis Djerba, Tunisie.",
+    work:"Projets Sélectionnés",
+    p1t:"Campagne Parfum de Luxe",
+    p1d:"Site cinématographique pour le lancement d’un parfum premium.",
+    p2t:"Plateforme Musicale IA",
+    p2d:"Interface émotionnelle transformant le texte en son.",
+    contact:"Contact",
+    send:"Envoyer"
+  }
+};
+
+function setLang(l){
+  document.querySelectorAll("[data-i18n]").forEach(e=>{
+    e.textContent=dict[l][e.dataset.i18n];
+  });
+  document.getElementById("btn-en").classList.toggle("active",l==="en");
+  document.getElementById("btn-fr").classList.toggle("active",l==="fr");
+}
+
+function openModal(id){
+  document.getElementById(id).classList.add("active");
+  document.body.style.overflow="hidden";
+}
+function closeModal(e){
+  if(e && e.target.classList.contains("modal")){
+    e.target.classList.remove("active");
+  } else {
+    const modal = document.querySelector('.modal.active');
+    if (modal) modal.classList.remove("active");
+  }
+  document.body.style.overflow="auto";
+}
+</script>
+
+</body>
+</html>
